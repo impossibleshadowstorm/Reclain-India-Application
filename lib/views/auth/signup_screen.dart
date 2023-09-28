@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:reclaim_india/views/auth/login_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -62,7 +63,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Icon(Icons.arrow_forward_sharp),
+                  const Icon(Icons.arrow_forward_sharp),
                 ],
               ),
               SizedBox(height: 5.h),
@@ -134,22 +135,27 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               SizedBox(height: 3.h),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account?",
+                    "Already have an account?",
                     style: GoogleFonts.poppins(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    "SignUp",
-                    style: GoogleFonts.poppins(
-                      color: const Color(0xffF8DB72),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
+                  InkWell(
+                    onTap: () {
+                      Get.to(() => const LoginScreen());
+                    },
+                    child: Text(
+                      "Sign In",
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xffF8DB72),
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   )
                 ],

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:reclaim_india/common/widgets/common_input_field.dart';
 import 'package:reclaim_india/common/widgets/custom_toasts.dart';
 import 'package:reclaim_india/controllers/auth_controller.dart';
+import 'package:reclaim_india/views/auth/signup_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -128,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 3.h),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -138,12 +139,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      "SignUp",
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xffF8DB72),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
+                    InkWell(
+                      onTap: () {
+                        Get.to(() => const SignupScreen());
+                      },
+                      child: Text(
+                        "SignUp",
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xffF8DB72),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     )
                   ],

@@ -102,6 +102,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           CustomToasts.successToast(
                               context, "SuccessFully Logged In..!!");
                         }
+                      } else if (response == 101) {
+                        if (mounted) {
+                          CustomToasts.successToast(
+                              context, "User doesn't exist..!!");
+                        }
+                      } else if (response == 102) {
+                        if (mounted) {
+                          CustomToasts.successToast(
+                              context, "Username or password is wrong..!!");
+                        }
                       } else {
                         if (mounted) {
                           CustomToasts.errorToast(

@@ -81,9 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(Icons.people),
                       ),
                     ),
-                    SizedBox(
-                      height: 2.5.h,
-                    ),
+                    SizedBox(height: 2.5.h),
                     TextFormField(
                       decoration: const InputDecoration(
                         focusedBorder: OutlineInputBorder(
@@ -114,7 +112,7 @@ class _SignupScreenState extends State<SignupScreen> {
               SizedBox(height: 2.h),
               InkWell(
                 onTap: () {
-                  // Sign In Logic
+                  // Sign Up Logic
                 },
                 child: Container(
                   height: 5.h,
@@ -123,7 +121,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   decoration: const BoxDecoration(
                     color: Color(0xffF8DB72),
                     borderRadius: BorderRadius.all(Radius.circular(50)),
-                    // border: Border.all(color: Colors.black)
                   ),
                   child: Text(
                     "Create Account",

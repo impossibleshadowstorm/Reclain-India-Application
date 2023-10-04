@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:js_interop_unsafe';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -6,10 +7,88 @@ import 'package:reclaim_india/services/global.dart';
 import 'package:reclaim_india/utils/constants.dart';
 
 class MainApplicationController extends GetxController {
+
+  Future<int> foundDel({required String fir}) async {
+    //  101 - Document Doesn't Exist
+    //  1 - Delete Sucessfully
+    //  0 - Error
+
+
+    try {
+      final userDocument = await FirebaseFirestore.instance
+          .collection(Constants.admin)
+          .doc(Global.storageServices.getString(Constants.stationCode))
+          .collection(Constants.adminFound)
+          .doc(fir)
+          .get();
+      if (!userDocument.exists) {
+        return 101;
+      }
+
+      await FirebaseFirestore.instance
+          .collection(Constants.admin)
+          .doc(Global.storageServices.getString(Constants.stationCode))
+          .collection(Constants.adminFound)
+          .doc(fir)
+          .delete().then((value) async {
+        await FirebaseFirestore.instance
+            .collection(Constants.found)
+            .doc(userDocument['rc'])
+            .delete();
+      });
+
+      return 1;
+    } catch (e) {
+      log(e.toString());
+      return 0;
+    }
+  }
+
+
+
+
+
+
+  Future<int> lostDel({required String fir}) async {
+    //  101 - Document Doesn't Exist
+    //  1 - Delete Sucessfully
+    //  0 - Error
+
+
+    try {
+      final userDocument = await FirebaseFirestore.instance
+          .collection(Constants.admin)
+          .doc(Global.storageServices.getString(Constants.stationCode))
+          .collection(Constants.adminLost)
+          .doc(fir)
+          .get();
+      if (!userDocument.exists) {
+        return 101;
+      }
+
+      await FirebaseFirestore.instance
+          .collection(Constants.admin)
+          .doc(Global.storageServices.getString(Constants.stationCode))
+          .collection(Constants.adminLost)
+          .doc(fir)
+          .delete().then((value) async {
+        await FirebaseFirestore.instance
+            .collection(Constants.lost)
+            .doc(userDocument['rc'])
+            .delete();
+      });
+
+      return 1;
+    } catch (e) {
+      log(e.toString());
+      return 0;
+    }
+  }
+
   Future<int> lostAdd({
     required String rc,
-    required engine,
-    required chassis,
+    required String engine,
+    required String chassis,
     required String fir,
     required String station,
     required String name,

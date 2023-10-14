@@ -7,12 +7,79 @@ import 'package:reclaim_india/services/global.dart';
 import 'package:reclaim_india/utils/constants.dart';
 
 class MainApplicationController extends GetxController {
+// Logic Beghind the matching Document Start
+
+  Future<void> findMatchingDocuments() async {
+    try {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      final CollectionReference lostCollection = firestore.collection(Constants.lost);
+      final CollectionReference foundCollection = firestore.collection(Constants.found);
+
+// Fetch all documents from 'lost' and 'found' collections
+      final QuerySnapshot lostQuerySnapshot = await lostCollection.get();
+      final QuerySnapshot foundQuerySnapshot = await foundCollection.get();
+
+// Create a set of document IDs from the 'found' collection
+      final Set<String> foundDocumentIds =
+          foundQuerySnapshot.docs.map((doc) => doc.id).toSet();
+
+// Iterate through the 'lost' collection and process matching documents
+      for (final lostDoc in lostQuerySnapshot.docs) {
+        final lostDocumentId = lostDoc.id;
+
+        if (foundDocumentIds.contains(lostDocumentId)) {
+          log('Matching Document ID: $lostDocumentId');
+          log('Data from "lost" collection: ${lostDoc.data()}');
+
+// Find the matching document in the 'found' collection
+          final foundDoc = foundQuerySnapshot.docs
+              .firstWhere((doc) => doc.id == lostDocumentId);
+
+          log('Data from "found" collection: ${foundDoc.data()}');
+
+          try {
+            Map<String, dynamic> recoverData;
+
+// Set data in the 'matched' collection
+            await firestore.collection(Constants.matched).doc(lostDocumentId).set({
+              'engine': lostDoc['engine'],
+              'chassis': lostDoc['chassis'],
+              'lost_reported': lostDoc['station_code'],
+              'lost_fir': lostDoc['fir_num'],
+              'found_reported': foundDoc['station_code'],
+              'found_fir': foundDoc['fir_num'],
+              'owner': lostDoc['name'],
+              'mobile': lostDoc['mobile'],
+              'address': lostDoc['address'],
+              'status': false,
+              'e_challan': null,
+            });
+
+// Delete from the 'lost' collection
+            await lostCollection.doc(lostDocumentId).delete();
+
+// Delete from the 'found' collection
+            await foundCollection.doc(lostDocumentId).delete();
+
+            log("Successfully processed and deleted matching documents");
+          } catch (e) {
+            log('Error processing documents: $e');
+          }
+        }
+      }
+    } catch (e) {
+      log('Error retrieving and processing matching documents: $e');
+    }
+  }
+
+// Logic Behind the Matching Document End
+
 
   Future<int> foundDel({required String fir}) async {
     //  101 - Document Doesn't Exist
     //  1 - Delete Sucessfully
     //  0 - Error
-
 
     try {
       final userDocument = await FirebaseFirestore.instance
@@ -30,7 +97,8 @@ class MainApplicationController extends GetxController {
           .doc(Global.storageServices.getString(Constants.stationCode))
           .collection(Constants.adminFound)
           .doc(fir)
-          .delete().then((value) async {
+          .delete()
+          .then((value) async {
         await FirebaseFirestore.instance
             .collection(Constants.found)
             .doc(userDocument['rc'])
@@ -44,16 +112,10 @@ class MainApplicationController extends GetxController {
     }
   }
 
-
-
-
-
-
   Future<int> lostDel({required String fir}) async {
     //  101 - Document Doesn't Exist
     //  1 - Delete Sucessfully
     //  0 - Error
-
 
     try {
       final userDocument = await FirebaseFirestore.instance
@@ -71,7 +133,8 @@ class MainApplicationController extends GetxController {
           .doc(Global.storageServices.getString(Constants.stationCode))
           .collection(Constants.adminLost)
           .doc(fir)
-          .delete().then((value) async {
+          .delete()
+          .then((value) async {
         await FirebaseFirestore.instance
             .collection(Constants.lost)
             .doc(userDocument['rc'])
@@ -90,7 +153,6 @@ class MainApplicationController extends GetxController {
     required String engine,
     required String chassis,
     required String fir,
-    required String station,
     required String name,
     required String address,
     required String contact,
@@ -118,6 +180,23 @@ class MainApplicationController extends GetxController {
           'fir_num': fir,
           'station_code':
               Global.storageServices.getString(Constants.stationCode),
+        }).then((value) async {
+          String stateCode = rc.substring(0, 2);
+          String districtCode = rc.substring(2, 4);
+          String series = rc.substring(4, rc.length - 4);
+          String runningSerial = rc.substring(rc.length - 4);
+          await FirebaseFirestore.instance
+              .collection(Constants.search)
+              .doc(stateCode)
+              .collection(districtCode)
+              .doc(series)
+              .collection(runningSerial)
+              .set({
+            'status': 'Lost',
+            'firNumber': fir,
+            'stationCode':
+                Global.storageServices.getString(Constants.stationCode),
+          });
         });
       });
 
@@ -154,6 +233,23 @@ class MainApplicationController extends GetxController {
           'fir_num': fir,
           'station_code':
               Global.storageServices.getString(Constants.stationCode),
+        }).then((value) async {
+          String stateCode = rc.substring(0, 2);
+          String districtCode = rc.substring(2, 4);
+          String series = rc.substring(4, rc.length - 4);
+          String runningSerial = rc.substring(rc.length - 4);
+          await FirebaseFirestore.instance
+              .collection(Constants.search)
+              .doc(stateCode)
+              .collection(districtCode)
+              .doc(series)
+              .collection(runningSerial)
+              .set({
+            'status': 'Found',
+            'firNumber': fir,
+            'stationCode':
+                Global.storageServices.getString(Constants.stationCode),
+          });
         });
       });
 

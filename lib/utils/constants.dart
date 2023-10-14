@@ -29,6 +29,8 @@ class Constants {
   static const String adminFound = "FOUND";
   static const String found = "found";
   static const String lost = "lost";
+  static const String search = "search";
+  static const String matched = "matched";
 
   //----------------------------------------------------------------
   // Document Key Names Constants
